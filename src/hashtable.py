@@ -51,8 +51,16 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
-
+        index = self._hash_mod(key)
+        current = self.storage[index]
+        new = LinkedPair(key, value)
+        # if there's already a Linked Pair there, append to singly linked list
+        if current:
+            while current.next:
+                current = current.next
+            current.next = new
+        else:
+            self.storage[index] = new
 
 
     def remove(self, key):
@@ -74,7 +82,16 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
+        current = self.storage[index]
+        # look through singly linked list for key
+        while current.key != key:
+            current = current.next
+        # if key is found, return value
+        if current.key == key:
+            return current.value
+        else:
+            return None
 
 
     def resize(self):
