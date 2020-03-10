@@ -54,10 +54,28 @@ class HashTable:
         index = self._hash_mod(key)
         current = self.storage[index]
         new = LinkedPair(key, value)
-        # if there's already a Linked Pair there, append to singly linked list
-        if current:
-            while current.next:
+        # print the table so far
+        print("\nTABLE SO FAR:\n")
+        for i in range(self.capacity):
+            sll = []
+            current = self.storage[i]
+            while current is not None:
+                sll.append((current.key, current.value))
                 current = current.next
+            print(sll)
+        # if there's already a Linked Pair there, append to singly linked list
+        current = self.storage[index]
+        if current != None:
+            # replace head if it matches key
+            if current.key == key:
+                self.storage[index] = new
+                new.next = current.next
+                return
+            while current.next:
+                prev, current = current, current.next
+                if current.key == key:
+                    prev.next, new.next = new, current.next
+                    return
             current.next = new
         else:
             self.storage[index] = new
@@ -71,7 +89,24 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
+        prev = None
+        current = self.storage[index]
+        # look through singly linked list for key
+        if current == None:
+            print("key not found")
+        else:
+            while current.key != key:
+                # keep track of previous node
+                prev, current = current, current.next
+            # if key is found, return value
+            if current.key == key:
+                if prev:
+                    prev.next = current.next
+                else:
+                    self.storage[index] = None
+            else:
+                print("key not found")
 
 
     def retrieve(self, key):
@@ -85,13 +120,17 @@ class HashTable:
         index = self._hash_mod(key)
         current = self.storage[index]
         # look through singly linked list for key
-        while current.key != key:
-            current = current.next
-        # if key is found, return value
-        if current.key == key:
-            return current.value
-        else:
-            return None
+        if current != None:
+            while current.key != key:
+                if current.next != None:
+                    current = current.next
+                else:
+                    break
+            # if key is found, return value
+            if current.key == key:
+                return current.value
+            else:
+                return None
 
 
     def resize(self):
@@ -101,7 +140,15 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        old_capacity = self.capacity
+        old_storage = self.storage
+        self.capacity = self.capacity * 2
+        self.storage = [None] * self.capacity
+        for i in range(old_capacity):
+            current = old_storage[i]
+            while current is not None:
+                self.insert(current.key, current.value)
+                current = current.next
 
 
 
